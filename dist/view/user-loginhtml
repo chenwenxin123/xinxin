@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Webpack App</title>
-  </head>
-  <body>
-  <script type="text/javascript" src="/dist/js/common.js?40cf1d48bd8d132cac6d"></script><script type="text/javascript" src="/dist/js/user-login.js?40cf1d48bd8d132cac6d"></script></body>
-</html>

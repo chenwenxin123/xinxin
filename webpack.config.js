@@ -2,11 +2,13 @@
 var  path=require('path');
 var ExtractTextPlugin=require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin=require('html-webpack-plugin');
+var str = new Buffer('aHR0cDovL3Rlc3QuaGFwcHltbWFsbC5jb20v', 'base64');
 var WEBPACK_ENV=process.env.WEBPACK_ENV || 'dev';
-var  getHtmlConfig=function(name){
+var  getHtmlConfig=function(name, title){
 	return{
-	templata:'./src/view/'+name+'.html',
-  	filename:'view/'+name+'html',
+	template:'./src/view/'+name+'.html',
+  	filename:'view/'+name+'.html',
+  	title:title,
   	inject:true,
   	hash:true,
   	chunks: ['common', name]
@@ -16,7 +18,9 @@ var config = {
 	entry:{
 		'common':['./src/page/common/index.js'],
 		'index': './src/page/index/index.js',
-                     'user-login': './src/page/user-login/index.js'
+                     'user-login': './src/page/user-login/index.js',
+                     'user-result':'./src/page/user-result/index.js'
+
                       },
 	output:{
 		path:path.resolve(__dirname, 'dist'),
@@ -51,19 +55,45 @@ module: {
 	          })
 	},
 	{
-		test:/\.(gif|png|jpg).??.*$/,
+		test:/\.(gif|png|jpg|woff|svg|eot|ttf).??.*$/,
 		loader:'url-loader?limit=100&name=resource/[name].[ext]'
+	},
+	{
+		test: /\.string$/,
+		loader:"html-loader"
+
 	}
     ]
 },
 plugins:[
 	new ExtractTextPlugin("css/[name].css"),
-	new HtmlWebpackPlugin(getHtmlConfig('index')),
-  	new HtmlWebpackPlugin(getHtmlConfig('user-login'))
-]
+	new HtmlWebpackPlugin(getHtmlConfig('index','首页')),
+  	new HtmlWebpackPlugin(getHtmlConfig('user-login','用户登录')),
+  	new HtmlWebpackPlugin(getHtmlConfig('user-result','操作结果'))
+],
+resolve:{
+	alias:{
+		"util":path.resolve(__dirname,'src/util'),
+		"node_modules": path.resolve(__dirname,'node_modules'),
+		"@":path.resolve(__dirname,'src/page'),
+		"service": path.resolve(__dirname,'src/service')
+
+
+	}
+},
+devServer:{
+	port:8088,
+	inline:true,
+	proxy:{
+		"**/*.do":{
+			target:str.toString(),
+			changeOrigin:true
+		}
+	}
+}
 }
 if('dev'==WEBPACK_ENV){
-config.entry.common.push('webpack-dev-server/client?http://localhost:8088');
+config.entry.common.push('webpack-dev-server/client?http://localhost:8089');
 }
 
 module.exports=config;
